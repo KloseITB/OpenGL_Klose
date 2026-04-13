@@ -27,6 +27,29 @@ GLuint gGraphicsPipelineProgram = 0;
 
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ GLOBAL VARIABLES ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+static void GLClearAllErrors() {
+	while (glGetError() != GL_NO_ERROR) {
+
+	}
+}
+
+// Return true if we have an error
+static bool GLCheckErrorStatus(const char* function, int line) {
+	while (GLenum error = glGetError()) {
+		std::cout << "OpenGL Error: " << error 
+			<< "\tLine: " << line 
+			<< "\tfunction: " << function
+			<< std::endl;
+		return true;
+	}
+	return false;
+}
+
+// This macro wraps a function that could create an error and prints out the error type, the line and the name of the function
+#define GLCheck(x) GLClearAllErrors(); x; GLCheckErrorStatus(#x, __LINE__);
+
+// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ERROR HANDLING ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 std::string LoadShaderAsString(const std::string& filename)
 {
 	// Shader program loaded as a string
@@ -233,9 +256,9 @@ void PreDraw() {
 // Shows the images on screen
 void Draw() {
 	glBindVertexArray(gVertexArrayObject);
-	glBindBuffer(GL_ARRAY_BUFFER, gVertexBufferObject);
+	GLCheck(glBindBuffer(GL_ARRAY_BUFFER, gVertexBufferObject));
 
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	GLCheck(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
 }
 
 
